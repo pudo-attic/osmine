@@ -1,0 +1,88 @@
+<html xmlns:py="http://genshi.edgewall.org/"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  py:strip="">
+  <xi:include href="../dataset/_nav.html" />
+  
+
+  <py:def function="nav_class">nav-editor</py:def>
+
+  <py:def function="page_title">${c.dataset.label or c.dataset.name}</py:def>
+  
+  
+  <py:def function="optional_head">
+    <style>
+      #frame {
+        display: none;
+        position: relative;
+        height: 305px;
+      }
+    </style>
+  </py:def>
+
+  <div py:def="content">
+    ${dataset_nav('mining')}
+    <div class="row">
+      <div class="span4">
+        <h3>Available Dimensions</h3>
+        <ul>
+          <li py:for="dimension in c.dataset.dimensions">
+            <code>${dimension.name}</code>: ${dimension.label}
+            <py:if test="hasattr(dimension, 'attributes')">
+              <span class="help-block">
+                Attributes: <span py:for="a in
+                  dimension.attributes"><code style="font-size: 9px;">${a.name}</code> </span>
+              </span>
+              <br/>
+            </py:if>
+          </li>
+        </ul>
+      </div>
+      <div class="span12">
+        <form class="basic" id="form" action="/${c.dataset.name}/meta/mining" method="POST">
+          <fieldset>
+            <textarea id="fallback" class="xxlarge" rows="20"
+              name="code">${c.code}</textarea>
+            <div id="frame">
+              <div id="code" style="height: 300px; width: 690px">${c.code}</div>
+            </div>
+          </fieldset>
+          <div class="actions">
+            <input id="save" value="Update" class="btn success" type="submit" />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <py:def function="scripts">
+    ${script_tag('vendor/ace/ace')}
+    ${script_tag('vendor/ace/mode-javascript')}
+    ${script_tag('vendor/ace/theme-monokai')}
+    <script>
+      jQuery(document).ready(function($) {
+        $("#fallback").hide();
+        $("#frame").show();
+        var editor = ace.edit("code");
+        var JSONMode = require("ace/mode/javascript").Mode;
+        editor.getSession().setMode(new JSONMode());
+        editor.setTheme("ace/theme/monokai");
+        editor.renderer.setShowPrintMargin(false);
+        $("#form").submit(function(e) {
+          var value = editor.getSession().getValue();
+          $("#fallback").val(value);
+        });
+      });
+    </script>
+    <style>
+      .ace-monokai .ace_gutter {
+        background-color: whiteSmoke;
+      }
+    </style>
+  </py:def>
+
+
+  <xi:include href="../layout.html" />
+</html>
+
+

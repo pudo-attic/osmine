@@ -1,0 +1,4 @@
+*.egg-info
+*.pyc
+*.so
+osmine/PyV8.py
